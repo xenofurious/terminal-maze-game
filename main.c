@@ -147,7 +147,7 @@ enum direction check_for_walls(int w, int h) {
         break; 
       case down:
         if (maze[w][h+1] == wall){
-          if (check_valid_cell(maze[w][h+2] || check_valid_cell_for_walls(w, h+1, down))){
+          if (check_valid_cell(maze[w][h+2]) || check_valid_cell_for_walls(w, h+1, down)){
             found_wall = true;
             return down;
           }
@@ -155,7 +155,7 @@ enum direction check_for_walls(int w, int h) {
         break; 
       case right:
         if (maze[w+1][h] == wall) {
-          if (check_valid_cell(maze[w+2][h] || check_valid_cell_for_walls(w+1, h, right))){
+          if (check_valid_cell(maze[w+2][h]) || check_valid_cell_for_walls(w+1, h, right)){
             found_wall = true;
             return right;
           }
