@@ -6,7 +6,7 @@
 
 
 #define WIDTH 50
-#define HEIGHT 25
+#define HEIGHT 24
 
 enum object {invalid, empty, boundary, wall, start, end};
 enum object maze[WIDTH][HEIGHT] = {invalid};
@@ -58,7 +58,7 @@ void print_maze() {
   for (h = 0; h < HEIGHT; h++){
     for (w = 0; w < WIDTH; w++) {
       switch (maze[w][h]){
-        case empty: printchar = '.'; break;
+        case empty: printchar = ' '; break;
         case boundary: printchar = 'B'; break;
         case wall: printchar = '#'; break;
         case start: printchar = 's'; break;
@@ -88,6 +88,41 @@ void permute_directions() {
   }
 }
 
+bool check_valid_cell(enum object cell){
+  if (cell == invalid || cell == end || cell == boundary) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool check_valid_cell_for_walls(int x, int y, enum direction my_dir) {
+  switch (my_dir){
+    case up:
+      if ((maze[x-1][y] == wall) && (maze[x-1][y-1] == wall) && (maze[x][y-1] == wall) && (maze[x+1][y-1] == wall) && (maze[x+1][y] == wall)) {
+        return true;
+      }
+      break;
+    case left:
+      if ((maze[x][y+1] == wall) && (maze[x-1][y+1] == wall) && (maze[x-1][y] == wall) && (maze[x-1][y-1] == wall) && (maze[x][y-1] == wall)) {
+        return true;
+      }
+      break; 
+    case down:
+      if ((maze[x+1][y] == wall) && (maze[x+1][y+1] == wall) && (maze[x][y+1] == wall) && (maze[x-1][y+1] == wall) && (maze[x-1][y] == wall)) {
+        return true;
+      }
+      break; 
+    case right:
+      if ((maze[x][y-1] == wall) && (maze[x+1][y-1] == wall) && (maze[x+1][y] == wall) && (maze[x+1][y+1] == wall) && (maze[x][y+1] == wall)) {
+        return true;
+      }
+      break; 
+    default: 
+      return false;
+  }  
+  return false;
+}
 
 enum direction check_for_walls(int w, int h) {
   bool found_wall = false;
@@ -96,7 +131,7 @@ enum direction check_for_walls(int w, int h) {
     switch (rand_direction[i]) {
       case up:
         if (maze[w][h-1] == wall) {
-          if (maze[w][h-2] == invalid) {
+          if (check_valid_cell(maze[w][h-2]) || check_valid_cell_for_walls(w, h-1, up)){
             found_wall = true;
             return up;
           }
@@ -104,7 +139,7 @@ enum direction check_for_walls(int w, int h) {
         break; 
       case left:
         if (maze[w-1][h] == wall){
-          if (maze[w-2][h] == invalid){
+          if (check_valid_cell(maze[w-2][h]) || check_valid_cell_for_walls(w-1, h, left)) {
             found_wall = true;
             return left;
           }
@@ -112,7 +147,7 @@ enum direction check_for_walls(int w, int h) {
         break; 
       case down:
         if (maze[w][h+1] == wall){
-          if (maze[w][h+2] == invalid){
+          if (check_valid_cell(maze[w][h+2] || check_valid_cell_for_walls(w, h+1, down))){
             found_wall = true;
             return down;
           }
@@ -120,7 +155,7 @@ enum direction check_for_walls(int w, int h) {
         break; 
       case right:
         if (maze[w+1][h] == wall) {
-          if (maze[w+2][h] == invalid) {
+          if (check_valid_cell(maze[w+2][h] || check_valid_cell_for_walls(w+1, h, right))){
             found_wall = true;
             return right;
           }
@@ -195,10 +230,22 @@ void generate_maze(int player_x, int player_y) {
   // need to think of a predictable test case
   generate_walls(none, &player_x, &player_y);
   enum direction thing = check_for_walls(player_x, player_y);
-  while (thing != none){
-    generate_walls(thing, &player_x, &player_y);
-    thing = check_for_walls(player_x, player_y);
-  }  
+  
+  while (stack_ptr != &stack[0]) {
+    if (thing != none){
+      generate_walls(thing, &player_x, &player_y);
+      thing = check_for_walls(player_x, player_y);
+      push( (struct coord){player_x, player_y});
+    } else {
+      pop();
+      player_x = (stack_ptr-1)->x;
+      player_y = (stack_ptr-1)->y;
+      thing = check_for_walls(player_x, player_y);
+    }
+  }
+
+
+
 }
 
 
