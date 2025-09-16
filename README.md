@@ -1,3 +1,5 @@
-my name jeff
+# my name jeff
 
-the code is suboptimal but i have been learning C for about 4 days now so please be gentle qwq
+the code is pretty bad but i made this with about 4 days of c experience so please be gentle qwq
+
+Generates a maze randomly using a scuffed implementation of the recursive backtracking algorithm
