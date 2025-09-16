@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
@@ -8,14 +7,13 @@
 struct coord stack[WIDTH*HEIGHT];
 enum object maze[WIDTH][HEIGHT];
 
-
 enum direction rand_direction[] = {up, left, down, right};
 enum direction *rand_direction_ptr = &rand_direction[0];
 
 struct coord *stack_ptr = &stack[0];
 
 void push(struct coord c) { 
-  printf("pushed value = %d %d\n", c.x, c.y);
+  //printf("pushed value = %d %d\n", c.x, c.y);
   *stack_ptr = c;
   stack_ptr++;
 }
@@ -23,7 +21,7 @@ void push(struct coord c) {
 struct coord pop() {
   stack_ptr--;
   struct coord c = *stack_ptr;
-  printf("popped value = %d %d\n", c.x, c.y);
+  //printf("popped value = %d %d\n", c.x, c.y);
   return c;
 }
 
@@ -42,30 +40,38 @@ void init_maze() {
   maze[WIDTH-2][HEIGHT-2] = end;
 }
 
+char get_maze_char(enum object maze_obj) {
+  char printchar; 
+  switch (maze_obj){
+    case empty: printchar = ' '; break;
+    case boundary: printchar = 'B'; break;
+    case wall: printchar = '#'; break;
+    case start: printchar = 's'; break;
+    case end: printchar = '*'; break;
+    default: printchar = '_'; break; // includes invalid
+  }
+  return printchar;
+}
 
 void print_maze() {
   char printchar;
   int w, h;
   for (h = 0; h < HEIGHT; h++){
     for (w = 0; w < WIDTH; w++) {
-      switch (maze[w][h]){
-        case empty: printchar = ' '; break;
-        case boundary: printchar = 'B'; break;
-        case wall: printchar = '#'; break;
-        case start: printchar = 's'; break;
-        case end: printchar = '*'; break;
-        default: printchar = '_'; break; // includes invalid
-      }
+      printchar = get_maze_char(maze[w][h]);
       mvprintw(h, w, "%c", printchar);
     }
   }
 }
 
 void draw_player(int player_x, int player_y) {
-  mvprintw(player_x, player_y, "@");
-
+  mvprintw(player_y, player_x, "@");
 }
 
+void undraw_player(int player_x_old, int player_y_old){
+  char mychar = get_maze_char(maze[player_x_old][player_y_old]);
+  mvprintw(player_y_old, player_x_old, "%c", mychar);
+}
 
 // now we try and implement the algorithm
 

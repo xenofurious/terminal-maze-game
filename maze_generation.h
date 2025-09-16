@@ -8,8 +8,8 @@
 
 
 enum object {invalid, empty, boundary, wall, start, end};
-
 enum direction { up, left, down, right, none };
+
 
 struct coord {
   int x;
@@ -31,6 +31,7 @@ struct coord pop();
 void init_maze();
 void print_maze();
 void draw_player(int player_x, int player_y);
+void undraw_player(int player_x_old, int player_y_old);
 void permute_directions();
 bool check_valid_cell(enum object cell);
 bool check_valid_cell_for_walls(int x, int y, enum direction my_dir);
